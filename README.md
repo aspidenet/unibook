@@ -1,2 +1,3 @@
 # UniBook
-# Book del personale e del patrimonio edilizio di un Ateneo.
+# Permette la navigazione tra i dati del personale e del patrimonio edilizio dell'Ateneo.
+
