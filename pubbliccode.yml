@@ -1,0 +1,26 @@
+publiccode-yaml-version: '0.1'
+name: UniBook
+releaseDate: '2018-11-28'
+url: 'https://github.com/aspidenet/unibook'
+developmentStatus: stable
+softwareType: standalone
+tags:
+  - contact-management
+maintenance:
+  type: internal
+  contacts:
+    - name: Marcello Trucco
+      email: info@aspide.net
+legal:
+  repoOwner: AspideNet
+  license: GPL-3.0-or-later
+  authorsFile: 'Marcello Trucco, Maria Luisa Solari'
+it:
+  riuso:
+    codiceIPA: udsg_ge
+description:
+  eng:
+    shortDescription: UniBook
+    longDescription: >-
+      <p>Portale per la navigazione tra i dati del personale di un Ateneo e i
+      dati del patrimonio edilizio</p>
