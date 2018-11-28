@@ -245,20 +245,6 @@ class DB {
 		}
 
 		$res = $this->link->Execute($strSQL);
-		
-		if ($res == FALSE) {
-			SendMail("marcello@unige.it", "WM::Unige - Errore di esecuzione", "[".$this->last_error_code."] ".$this->last_error_message."\r\n".$strSQL."\r\nUsername: ".$operatore->username()."\r\nPagina: ".$_SERVER['PHP_SELF']);
-      #DEBUG("<span style='color:red;'>FAIL - $strSQL<br>{$this->link->ErrorMsg()}</span>");
-			$this->last_error_code = $this->link->ErrorNo();
-			$this->last_error_message = $this->link->ErrorMsg();
-			$this->Logga(LOGERROR, "[".$this->last_error_code."] ".$this->last_error_message, $strSQL);
-			return FALSE;
-		}
-		elseif ($logga) {
-			#DEBUG("OK - $strSQL");
-			$this->Logga(LOGINFO, "$titolo ({$res->RecordCount()})", $strSQL);
-		}
-
 		if ($res != FALSE) {
 			$rs = new RS();
 			$rs->set($res);
@@ -285,33 +271,6 @@ class DB {
 		else
 			return FALSE;
         
-        
-        
-        /*
-		$operatore = getUser();
-		
-		if ($this->TransNo() > 0 && $this->HasFailedTrans()) {
-			$this->m_querylist .= "*** NOT EXEC *** ".$strSQL."<br>\n";
-			#DEBUG("<span style='color:red;'>FAIL TRANS - $strSQL<br>{$this->link->ErrorMsg()}</span>");
-			return false;
-		}
-
-		if ($res == FALSE) {
-			SendMail("marcello@unige.it", "WM::Unige - Errore di esecuzione", "[".$this->last_error_code."] ".$this->last_error_message."\r\n".$strSQL."\r\nUsername: ".$operatore->username()."\r\nPagina: ".$_SERVER['PHP_SELF']);
-            #DEBUG("<span style='color:red;'>FAIL - $strSQL<br>{$this->link->ErrorMsg()}</span>");
-			$this->last_error_code = $this->link->ErrorNo();
-			$this->last_error_message = $this->link->ErrorMsg();
-			$this->Logga(LOGERROR, "[".$this->last_error_code."] ".$this->last_error_message, $strSQL);
-			return FALSE;
-		}
-		elseif ($logga) {
-			#DEBUG("OK - $strSQL");
-			$this->Logga(LOGINFO, "$titolo ({$res->RecordCount()})", $strSQL);
-		}
-
-		
-		#return $res;
-        */
 	}
 
 	################################################

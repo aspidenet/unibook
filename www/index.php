@@ -8,7 +8,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 require_once __DIR__ . '/../src/common.inc.php';
 require_once __DIR__ . '/../src/classes/medoo.class.php';*/
-set_include_path(get_include_path().PATH_SEPARATOR.'./'.PATH_SEPARATOR.'../'.PATH_SEPARATOR.'../LIB'.PATH_SEPARATOR.'../templates');
+#set_include_path(get_include_path().PATH_SEPARATOR.'./'.PATH_SEPARATOR.'../'.PATH_SEPARATOR.'../LIB'.PATH_SEPARATOR.'../templates');
 
 require_once("../src/common.inc.php");
 
@@ -16,12 +16,10 @@ $modules = array(
     'personale',
     'edifici',
     'strutture',
-    'ruoli',
+    'qualifiche',
     'incarichi',
     'ssd',
-    #'poli',
-    'spazi',
-    'test'
+    'spazi'
 );
 
 try {

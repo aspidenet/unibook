@@ -43,23 +43,26 @@ $this->respond('GET', '/[a:matricola]', function ($request, $response, $service,
     # INFO DA CSA - FUNZIONI ATTIVE
     $funzioni = array();
     $sql = "SELECT 
-                Matricola
-              , Cognome
-              , Nome
-              , CodeRuolo
-              , CodeFunzione
-              , DecoFunzione
-              , CodeStruttura
-              , DecoStruttura
-              , InizioIncarico
-              , DataFineValidita
-              , TermineIncarico
-              FROM {$DBMODULI}.BOOK_IncarichiFunzioni
+                matricola
+              , cognome
+              , nome
+              , i.codefunzione
+              , decofunzione
+              , i.codestruttura
+              , decostruttura
+              , inizioincarico
+              , termineincarico
+              , peso
+              FROM {$DBMODULI}.BOOK_IncarichiFunzioni i
+              LEFT JOIN {$DBMODULI}.BOOK_Funzioni f ON f.codefunzione=i.codefunzione
+              LEFT JOIN {$DBMODULI}.BOOK_FunzioniPesi p ON f.codefunzione=p.codefunzione
+              LEFT JOIN {$DBMODULI}.BOOK_Strutture s ON i.codestruttura=s.codestruttura
             WHERE matricola=?
-            order by DecoFunzione";
+            order by peso desc, DecoFunzione";
     $rs = $db->Execute($sql, array("{$matricola}"));
     if ($rs != false && $rs->RecordCount())
         $funzioni = $rs->GetArray();
+    $session->log($funzioni);
     
     #####################################################################################
     # DOCENZE dal MANIFESTO

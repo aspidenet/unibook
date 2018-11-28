@@ -8,22 +8,6 @@ $this->respond('GET', '/?', function ($request, $response, $service, $app) {
     $session = getSession();
     $db = getDB();
     
-    /*
-    Aree scientifico disciplinari
-    Centri
-    Dipartimenti
-    Scuole di Ateneo
-    IANUA - Scuola superiore dell'Università degli Studi di Genova (ex Istituto di studi superiori dell'Università di Genova (ISSUGE)
-
-    $tipi = array(
-        'amministrazione' => "Amministrazione",
-        'scuole' => "Scuole",
-        'dipartimenti' => "Dipartimenti",
-        'biblioteche' => "Biblioteche",
-        'centri' => "Centri"
-    );
-    */
-    
     # Tipi
     $sql = "SELECT codice_tipo_struttura, tipo_struttura
             FROM {$DBMODULI}.BOOK_StruttureTipi
@@ -51,9 +35,7 @@ $this->respond('GET', '/tipo-[a:classestruttura]/?', function ($request, $respon
     # Strutture
     $sql = "SELECT *
             FROM {$DBMODULI}.BOOK_Strutture
-            WHERE 1=1
-            AND codeugov<>'TERZI'
-            AND codeugov IS NOT NULL
+            WHERE codeugov IS NOT NULL
             AND codeclasse=?";
     #$session->log($sql);
     $rs = $db->Execute($sql, array($classestruttura));
@@ -83,8 +65,7 @@ $this->respond('GET', '/tipo-[a:classestruttura]/?', function ($request, $respon
     # Personale per struttura livello 1
     $sql = "SELECT codeugov, count(distinct matricola) as numero
             FROM {$DBMODULI}.BOOK_VW_Personale
-            WHERE codeugov<>'TERZI'
-            AND codeugov IS NOT NULL
+            WHERE codeugov IS NOT NULL
             AND classe_struttura=?
             group by codeugov
             order by codeugov";
@@ -99,8 +80,7 @@ $this->respond('GET', '/tipo-[a:classestruttura]/?', function ($request, $respon
     # Personale per servizio
     $sql = "SELECT codice_servizio, count(distinct matricola) as numero
             FROM {$DBMODULI}.BOOK_VW_Personale
-            WHERE codeugov<>'TERZI'
-            AND codeugov IS NOT NULL
+            WHERE codeugov IS NOT NULL
             AND codice_servizio IS NOT NULL
             AND classe_struttura=?
             group by codice_servizio
@@ -140,98 +120,6 @@ $this->respond('GET', '/tipo-[a:classestruttura]/?', function ($request, $respon
 
 
 
-#
-# INDEX
-#
-$this->respond('GET', '/all', function ($request, $response, $service, $app) {
-    GLOBAL $DBMODULI;
-    $session = getSession();
-    $db = getDB();
-    
-    # Strutture
-    $sql = "SELECT *
-            FROM {$DBMODULI}.BOOK_Strutture
-            WHERE 1=1 --(livello_struttura=1 or tipo_struttura='dipartimento')
-            AND codeugov<>'TERZI'
-            AND codeugov IS NOT NULL";
-    #$session->log($sql);
-    $rs = $db->Esegui($sql);
-    $strutture = parseStrutture($rs->GetArray());
-    
-    
-    # Personale per ruolo/profilo
-    $sql = "SELECT codeugov, coderuolo, decoruolo, codeprofilo, profilo, count(distinct matricola) as numero
-            FROM {$DBMODULI}.BOOK_VW_Personale
-            group by codeugov, coderuolo, decoruolo, codeprofilo, profilo
-            order by codeugov, coderuolo, decoruolo, codeprofilo, profilo";
-    #$session->log($sql);
-    $rs = $db->Esegui($sql);
-    $personale = array();
-    while(!$rs->EOF) {
-        $row = $rs->FetchRow();
-        $s = $row["codeugov"];
-        $personale[$s][] = $row;
-    }
-    
-    #
-    # CONTATORI
-    #
-    $contatori = array();
-    
-    # Personale per struttura livello 1
-    $sql = "SELECT codeugov, count(distinct matricola) as numero
-            FROM {$DBMODULI}.BOOK_VW_Personale
-            WHERE codeugov<>'TERZI'
-            AND codeugov IS NOT NULL
-            group by codeugov
-            order by codeugov";
-    #$session->log($sql);
-    $rs = $db->Esegui($sql);
-    while(!$rs->EOF) {
-        $row = $rs->FetchRow();
-        $s = $row["codeugov"];
-        $contatori["{$s}"] = $row["numero"];
-    }
-    
-    # Personale per servizio
-    $sql = "SELECT codice_servizio, count(distinct matricola) as numero
-            FROM {$DBMODULI}.BOOK_VW_Personale
-            WHERE codeugov<>'TERZI'
-            AND codeugov IS NOT NULL
-            AND codice_servizio IS NOT NULL
-            group by codice_servizio
-            order by codice_servizio";
-    #$session->log($sql);
-    $rs = $db->Esegui($sql);
-    while(!$rs->EOF) {
-        $row = $rs->FetchRow();
-        $s = $row["codice_servizio"];
-        $contatori["{$s}"] = $row["numero"];
-    }
-    
-    # Personale per settore
-    $sql = "SELECT codice_settore, count(distinct matricola) as numero
-            FROM {$DBMODULI}.BOOK_VW_Personale
-            WHERE codeugov<>'TERZI'
-            AND codeugov IS NOT NULL
-            AND codice_settore IS NOT NULL
-            group by codice_settore
-            order by codice_settore";
-    #$session->log($sql);
-    $rs = $db->Esegui($sql);
-    while(!$rs->EOF) {
-        $row = $rs->FetchRow();
-        $s = $row["codice_settore"];
-        $contatori["{$s}"] = $row["numero"];
-    }
-    
-    #print_r($strutture);
-    $session->smarty->assign("strutture", $strutture);
-    $session->smarty->assign("personale", $personale);
-    $session->smarty->assign("contatori", $contatori);
-    $session->smarty->display("strutture.tpl");
-});
-
 
 
 #
@@ -260,8 +148,9 @@ $this->respond('GET', '/struttura/[a:codeugov]', function ($request, $response, 
     $competenze = $rows[0]["competenze"];
     
     $incarichi = array();
-    $sql = "SELECT DISTINCT nome, cognome, matricola, codefunzione, decofunzione
-            FROM {$DBMODULI}.BOOK_IncarichiFunzioni
+    $sql = "SELECT DISTINCT nome, cognome, matricola, i.codefunzione, decofunzione
+            FROM {$DBMODULI}.BOOK_IncarichiFunzioni i
+            JOIN BOOK_Funzioni f ON f.codefunzione=i.codefunzione
             WHERE codestruttura=?";
     $rs = $db->Execute($sql, array($codeugov));
     $rows = $rs->GetArray();
@@ -293,18 +182,6 @@ $this->respond('GET', '/struttura/[a:codeugov]', function ($request, $response, 
         $recapiti[$tipo][] = $row;
     }
     
-    
-    // SELECT TOP 1000 [codestruttura]
-      // ,[codice_tipo_recapito]
-      // ,[tipo_recapito]
-      // ,[recapito]
-      // ,[indirizzo]
-      // ,[cap]
-      // ,[comune]
-      // ,[localita]
-  // FROM [WMModuli].[dbo].[BOOK_StruttureRecapiti]
-    
-    #echo "PERSONALE";
     $session->smarty->assign("struttura", $struttura[0]);
     $session->smarty->assign("competenze", nl2br($competenze));
     $session->smarty->assign("incarichi", $incarichi);
@@ -319,7 +196,7 @@ $this->respond('GET', '/struttura/[a:codeugov]', function ($request, $response, 
 
 
 #
-# Persoanle per struttura
+# Personale per struttura
 #
 $this->respond('GET', '/personale/[a:codeugov]', function ($request, $response, $service, $app) {
     GLOBAL $DBMODULI;
@@ -331,12 +208,9 @@ $this->respond('GET', '/personale/[a:codeugov]', function ($request, $response, 
     $sql = "SELECT *
             FROM {$DBMODULI}.BOOK_VW_Personale
             WHERE ? in (codeugov,codice_settore,codice_servizio,codice_area)";
-    #$session->log($sql);
-    #$rs = $db->Execute($sql, array($codeugov, $codeugov, $codeugov, $codeugov));
     $rs = $db->Execute($sql, array($codeugov));
     $personale = parsePersonale($rs->GetArray());
     
-    #echo "PERSONALE";
     $session->smarty->assign("personale", $personale);
     $session->smarty->display("personale.tpl");
 });
@@ -344,7 +218,7 @@ $this->respond('GET', '/personale/[a:codeugov]', function ($request, $response, 
 #
 # Personale per struttura e ruolo / profilo
 #
-$this->respond('GET', '/personale/[a:codeugov]/[a:coderuolo]/?[a:codeprofilo]?', function ($request, $response, $service, $app) {
+$this->respond('GET', '/personale/[a:codeugov]/[:coderuolo]/?[a:codeprofilo]?', function ($request, $response, $service, $app) {
     GLOBAL $DBMODULI;
     $codeugov = $request->codeugov;
     $coderuolo = $request->coderuolo;
@@ -356,12 +230,11 @@ $this->respond('GET', '/personale/[a:codeugov]/[a:coderuolo]/?[a:codeprofilo]?',
             FROM {$DBMODULI}.BOOK_VW_Personale
             WHERE (? in (codeugov,codice_settore,codice_servizio,codice_area))
             AND coderuolo=?
-            AND codeprofilo like ?";
-    #$session->log($sql);
+            AND ISNULL(codeprofilo, '') like ?";
+            
     $rs = $db->Execute($sql, array($codeugov, $coderuolo, $codeprofilo."%"));
     $personale = parsePersonale($rs->GetArray());
     
-    #echo "PERSONALE";
     $session->smarty->assign("personale", $personale);
     $session->smarty->display("personale.tpl");
 });

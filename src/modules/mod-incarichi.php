@@ -9,15 +9,16 @@ $this->respond('GET', '/?', function ($request, $response, $service, $app) {
     $session = getSession();
     $db = getDB();
     
-    $sql = "SELECT DISTINCT codefunzione, decofunzione, peso
-            FROM {$DBMODULI}.BOOK_IncarichiFunzioni
+    $sql = "SELECT DISTINCT i.codefunzione, decofunzione, peso
+            FROM {$DBMODULI}.BOOK_IncarichiFunzioni i
+            LEFT JOIN {$DBMODULI}.BOOK_Funzioni f ON f.codefunzione=i.codefunzione
+            LEFT JOIN {$DBMODULI}.BOOK_FunzioniPesi p ON f.codefunzione=p.codefunzione
             ORDER BY peso DESC";
     $session->log($sql);
     $rs = $db->Esegui($sql);
     
-    #echo "PERSONALE";
-    $session->smarty->assign("funzioni", $rs->GetArray());
-    $session->smarty->display("funzioni.tpl");
+    $session->smarty->assign("incarichi", $rs->GetArray());
+    $session->smarty->display("incarichi.tpl");
 });
 
 

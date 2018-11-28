@@ -7,10 +7,7 @@ require_once "../src/classes/db.class.php";
 require_once "../src/classes/meta.class.php";
 require_once "../src/classes/user.class.php";
 
-$DBMODULI = "NGINTEGRA.WMModuli.dbo";
-$DBCONSOLIDAMENTO = "REFBUILDING_DB.CSITA.dbo";
-$DBREF = "REFBUILDING_DB.Unige.dbo";
-$DBREFTREE = "REFTREE_TEST_DB.Reftree_unige";
+$DBMODULI = "dbo";
 #$DBUGOV = "NGINTEGRA.WMModuli.dbo";
 
 #
@@ -55,13 +52,6 @@ function getDB() {
 	$db->Init();
     return $db;
 }
-
-function getDBRefTree() {
-    $dbref = new DB();
-    $dbref->Connetti("10.187.1.106", cifra("sa"), cifra("r3ftreet3st!"), "reftree_unige") or die("DB REF KO");
-	$dbref->Init();
-    return $dbref;
-}
 	
 function parsePersonale($arr) {
     $result = array();
@@ -90,11 +80,11 @@ function parseStrutture($arr) {
         $codeugov = $item["codeugov"];
         $tipo_struttura = $item["tipo_struttura"];
         $livello_struttura = $item["livello_struttura"];
-        $codice_area = str_replace("NS", "100", $item["codice_area"]);
-        $codice_servizio = str_replace("NS", "100", $item["codice_servizio"]);
-        $codice_settore = str_replace("NS", "100", $item["codice_settore"]);
+        $codice_area = $item["codice_area"];
+        $codice_servizio = $item["codice_servizio"];
+        $codice_settore = $item["codice_settore"];
         
-        if ($livello_struttura == 1 || $tipo_struttura == 'Dipartimento' || $tipo_struttura == 'Biblioteca di Scuola') {
+        if ($livello_struttura == 1) {
             $result["{$codeugov}"] = $item;
         }
         elseif (strlen($codice_settore) > 0) {
