@@ -154,7 +154,7 @@ $this->respond('POST', '/?', function ($request, $response, $service, $app) {
     $session->smarty->assign("nmq", round($nmq, 0));
     $session->smarty->assign("nposti", $nposti);
     $session->smarty->assign("spazi", $spazi);
-    $session->smarty->assign("APP_BASE_URL", ROOT_DIR.APP_BASE_URL);
+    $session->smarty->assign("APP_BASE_URL", APP_BASE_URL);
     $session->smarty->display("spazi.tpl");
 });
 

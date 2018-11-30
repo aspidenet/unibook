@@ -59,7 +59,7 @@ class Session {
         if (!$this->checkLogin()) {
             if ($url)
                 $this->set("REDIRECT_URL_AFTER_LOGIN", $url, true);
-            $this->redirect(ROOT_DIR."/login");
+            $this->redirect(APP_BASE_URL."/login");
         }
     }
     public function redirect($url) {

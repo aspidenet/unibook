@@ -53,7 +53,7 @@ try {
         // echo "<br>INDEX<br>URI: ".$request->uri()."<br>";
         // echo "PATHNAME: ".$request->pathname()."<br>";
         // echo "METHOD: ".$request->method()."<br>";
-        // echo "ROOT_DIR: ".ROOT_DIR.APP_BASE_URL ."<br>";
+        // echo "ROOT_DIR: ".APP_BASE_URL ."<br>";
         // $passed_params = $request->params();
         // $headers = $request->headers();
         // echo "<br>HEADERS:<br>";
@@ -61,12 +61,8 @@ try {
         // echo "<br><br>PARAMS:<br>";
         // print_r($passed_params);
         // echo "-----------------------------------------------------------<br>";
-        $session->smarty->assign("APP_BASE_URL", ROOT_DIR.APP_BASE_URL);
-        $session->smarty->assign("REQUEST_URI", str_ireplace(ROOT_DIR.APP_BASE_URL, "", $request->pathname()));
-        
-        $service->addValidator('SearchName', function ($str) {
-            return preg_match("/^([0-9a-z@. ])*(['])?([0-9a-z@. ])*(['?????])?$/i", $str);
-        });
+        $session->smarty->assign("APP_BASE_URL", APP_BASE_URL);
+        $session->smarty->assign("REQUEST_URI", str_ireplace(APP_BASE_URL, "", $request->pathname()));
         
         $sql = "SELECT TOP 1 *
                 FROM {$DBMODULI}.BOOK_Vars 
@@ -80,11 +76,11 @@ try {
 
     foreach($modules as $modulo) {
         //Include all routes defined in a file under a given namespace
-        $klein->with(ROOT_DIR.APP_BASE_URL."/{$modulo}", "../src/modules/mod-{$modulo}.php");
+        $klein->with(APP_BASE_URL."/{$modulo}", "../src/modules/mod-{$modulo}.php");
     }
 
     # INDEX
-    $klein->respond('GET', ROOT_DIR.APP_BASE_URL."/?", function ($request, $response, $service, $app) {
+    $klein->respond('GET', APP_BASE_URL."/?", function ($request, $response, $service, $app) {
         GLOBAL $DBMODULI;
         $db = getDB();
         $session = getSession();
@@ -131,7 +127,7 @@ try {
     });
 
     # PHP-INFO
-    // $klein->respond('GET', ROOT_DIR.APP_BASE_URL."/phpinfo", function ($request, $response, $service, $app) {
+    // $klein->respond('GET', APP_BASE_URL."/phpinfo", function ($request, $response, $service, $app) {
         // phpinfo();
         // exit();
     // });
